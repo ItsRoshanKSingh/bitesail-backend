@@ -35,10 +35,10 @@ jobs:
 
 
     - name: Build Docker images
-      run: docker-compose build
+      run: docker compose build
 
     - name: Run linting
-      run: docker-compose run --rm web flake8
+      run: docker compose run --rm web flake8
 
     - name: Run tests
-      run: docker-compose run --rm web python manage.py test
+      run: docker compose run --rm web python manage.py test
