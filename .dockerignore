@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# Docker
+.docker
+
+# Python
+*.pyc
+__pycache__/
+.env/
+.venv/
+venv/
+
+# Other files/directories that might be large or unnecessary
+*.log
+*.md
+Dockerfile*
+docker-compose.yml
+README.md
+docs/
+tests/
