@@ -13,16 +13,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Set /app as the working directory. All subsequent commands will operate here.
 WORKDIR /app
 
-# Install system dependencies in one go to minimize image layers.
+# Install PostgreSQL client without unnecessary build dependencies
 RUN apk update && apk add --no-cache \
-    gcc musl-dev postgresql-dev libffi-dev python3-dev build-base bash && \
-    # Clean up apk cache to reduce image size
-    rm -rf /var/cache/apk/*
+    postgresql-client \
+    libpq-dev \
+    build-base
 
-# Copy requirements files first to leverage Docker layer caching.
+# Copy requirements files first to leverage Docker layer caching
 COPY ./requirements.txt ./requirements.dev.txt /tmp/
 
-# Install Python dependencies and upgrade pip in one go to avoid creating multiple layers.
+# Install Python dependencies and upgrade pip in one go to avoid creating multiple layers
 ARG DEV=False
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install -r /tmp/requirements.txt && \
@@ -30,12 +30,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
     # Remove the temporary requirements files to keep the image clean and small
     rm -rf /tmp
 
-# Copy the actual application code (Django project and apps) into the working directory.
+# Copy the actual application code (Django project and apps) into the working directory
 COPY project/ /app/project/
 COPY apps/ /app/apps/
 COPY manage.py /app/
 
-# Create a non-root user (django-user) to avoid running the app as root, which is a security risk.
+# Create a non-root user (django-user) to avoid running the app as root, which is a security risk
 RUN adduser --disabled-password --home /home/django-user --gecos "" django-user || true && \
     # Ensure the new user has ownership of the app files
     chown -R django-user:django-user /app
@@ -43,8 +43,8 @@ RUN adduser --disabled-password --home /home/django-user --gecos "" django-user 
 # Expose the port where the Django app will run (default is 8000 for development)
 EXPOSE 8000
 
-# Switch to the non-root user for running the Django app. This improves security.
+# Switch to the non-root user for running the Django app. This improves security
 USER django-user
 
-# Use the built-in Django development server for now. In production, you'd likely switch to something like gunicorn.
+# Use the built-in Django development server for now (can be replaced by gunicorn in production)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
