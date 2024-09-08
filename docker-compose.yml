@@ -7,7 +7,10 @@ services:
       dockerfile: Dockerfile
       args:
         DEV: "True"  # Set to "True" to include development dependencies
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/app
     ports:
@@ -15,16 +18,21 @@ services:
     depends_on:
       - db
     environment:
+      - DB_HOST=db
+      - DB_NAME=devdb
+      - DB_USER=devuser
+      - DB_PASS=changeme
       - DJANGO_SETTINGS_MODULE=project.settings
+      - PYTHONPATH=/app
 
   db:
     image: postgres:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: your_database_name
-      POSTGRES_USER: your_username
-      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: devdb
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: changeme
 
 volumes:
   postgres_data:
