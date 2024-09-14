@@ -1,1 +1,2 @@
+# flake8: Tool for checking the style guide enforcement for Python code
 flake8>=7.1.1,<7.2
