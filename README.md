@@ -60,6 +60,21 @@ bitesail-backend/
 
    Open your web browser and navigate to `http://localhost:8000` to access the Django application.
 
+## Accessing API Documentation
+
+### Swagger UI
+
+To explore and test the API endpoints, navigate to the following URL in your web browser:
+
+- **Swagger UI**: [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/)
+
+### API Schema
+
+For a raw OpenAPI schema of your API, visit:
+
+- **API Schema**: [http://localhost:8000/api/schema/](http://localhost:8000/api/schema/)
+
+
 ## Docker Configuration
 
 - **Dockerfile**: Defines the environment for the Django application, using Python 3.11 on an Alpine base image.
@@ -93,12 +108,11 @@ docker-compose down
 Run tests within the Docker container using:
 
 ```sh
-docker-compose run web python manage.py test
+docker-compose run web python manage.py test -v2
 ```
-
-Certainly! Here's a concise addition for your README file:
-
+where,v2 Shows each test that runs, including those that passed
 ---
+
 
 ## Code Quality and Linting
 
