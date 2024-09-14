@@ -22,8 +22,6 @@ services:
       - DB_NAME=devdb
       - DB_USER=devuser
       - DB_PASS=changeme
-      - DJANGO_SETTINGS_MODULE=project.settings
-      - PYTHONPATH=/app
 
   db:
     image: postgres:latest
