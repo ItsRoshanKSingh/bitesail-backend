@@ -41,8 +41,7 @@ class UserManager(BaseUserManager):
 
         # Filter extra fields to include only allowed ones
         allowed_fields = {
-            "first_name",
-            "last_name",
+            "name",
             "email",
             "is_active",
             "is_staff",

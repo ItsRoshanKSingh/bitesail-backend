@@ -14,15 +14,21 @@ bitesail-backend/
 │   └── wsgi.py
 ├── apps/
 │   └── core/
+│   |   ├── __init__.py
+│   |   ├── management/
+│   |   |   ├── __init__.py
+│   |   |   ├── commands/
+│   |   |       ├── __init__.py
+│   |   |       ├── wait_for_db.py
+│   |   ├── tests/
+│   |   ├── apps.py
+│   |   ├── models.py
+│   |   └── urls.py
+│   └── user/
 │       ├── __init__.py
-│       ├── management/
-│       |   ├── __init__.py
-│       |   ├── commands/
-│       |       ├── __init__.py
-│       |       ├── wait_for_db.py
 │       ├── tests/
 │       ├── apps.py
-│       ├── models.py
+│       ├── views.py
 │       ├── serializers.py
 │       └── urls.py
 ├── requirements.txt

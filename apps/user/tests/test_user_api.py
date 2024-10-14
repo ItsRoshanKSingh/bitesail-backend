@@ -13,6 +13,8 @@ CREATE_USER_URL = reverse("user:create")
 # URL for token creation endpoint
 TOKEN_URL = reverse("user:token")
 
+ME_URL = reverse("user:me")
+
 
 def create_user(**params):
     """
@@ -178,3 +180,79 @@ class PublicUserApiTest(TestCase):
         # Assert that the response does not contain a token and the status is 400 Bad Request
         self.assertNotIn("token", response.data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_user_unauthorized(self):
+        """
+        Test that retrieving user data without authentication returns 401 Unauthorized.
+        """
+        # Send GET request to ME_URL without authentication
+        res = self.client.get(ME_URL)
+
+        # Assert that the response status code is 401 Unauthorized
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
+
+class PublicUserApiTest(TestCase):
+    """
+    Test suite for user-related API endpoints with authentication.
+    """
+
+    def setUp(self) -> None:
+        """
+        Set up a test user and authenticate the client with that user.
+        """
+        self.user = get_user_model().objects.create_user(
+            name="testUser", email="testUser@example.com", password="New!2024"
+        )
+
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def test_retrieve_user_profile_success(self):
+        """
+        Test retrieving the authenticated user's profile successfully.
+
+        Sends a GET request to the profile endpoint and verifies that the response status is 200 OK
+        and the returned data matches the authenticated user's details.
+        """
+        response = self.client.get(ME_URL)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            response.data,
+            {
+                "name": self.user.name,
+                "email": self.user.email,
+            },
+        )
+
+    def test_post_to_user_profile_not_allowed(self):
+        """
+        Test that POST requests to the profile endpoint are not allowed.
+
+        Sends a POST request to the profile endpoint and verifies that the response status is 405 Method Not Allowed.
+        """
+        response = self.client.post(ME_URL, {})
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+
+    def test_update_user_profile_success(self):
+        """
+        Test updating the authenticated user's profile successfully.
+
+        Sends a PATCH request with updated user details to the profile endpoint. Then verifies that the user's
+        details are updated in the database and the new password is correctly set.
+        """
+        payload = {
+            "name": "updatedUser",
+            "email": "updatedUser@example.com",
+            "password": "New!2024_",
+        }
+        response = self.client.patch(ME_URL, payload, format="json")
+
+        # Refresh the user instance from the database
+        self.user.refresh_from_db()
+
+        # Verify the user details were updated correctly
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(self.user.name, payload["name"])
+        self.assertEqual(self.user.email, payload["email"])
+        self.assertTrue(self.user.check_password(payload["password"]))
