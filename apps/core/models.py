@@ -10,6 +10,7 @@ from django.contrib.auth.models import (
 )
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -117,3 +118,39 @@ class User(AbstractBaseUser, PermissionsMixin):
         Return a string representation of the user instance, which is the user's email.
         """
         return self.email
+
+
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Ingredient(models.Model):
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.name
+
+
+class Recipe(models.Model):
+    """Recipe objects"""
+
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    time_minute = models.IntegerField()
+    price = models.DecimalField(max_digits=5, decimal_places=2)
+    link = models.CharField(max_length=255, blank=True)
+    tags = models.ManyToManyField("Tag")
+    ingredients = models.ManyToManyField("Ingredient")
+
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return self.title

@@ -23,6 +23,7 @@ WORKDIR /app
 # - build-base: A meta-package that includes essential build tools.
 RUN apk update && apk add --no-cache \
     postgresql-client \
+    jpeg-dev \
     libpq-dev \
     build-base
 
